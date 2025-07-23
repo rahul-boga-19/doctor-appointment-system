@@ -31,11 +31,3 @@ A web-based Doctor Appointment Booking System developed using **Python**, **Djan
 | Database      | SQLite (or can be extended to PostgreSQL/MySQL) |
 | Version Control | Git & GitHub                          |
 
----
-
-## 🖼️ Screenshots
-
-> _Include screenshots of key pages such as Home Page, Appointment Booking Page, Admin Dashboard, etc._
-
----
-
