@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Doctor Appointment System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .logo-img {
+      height: 80px;
+      width: auto;
+      object-fit: contain;
+    }
+    body {
+      background-color: #f8f9fa;
+    }
+    .card-img-top {
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .footer {
+      background-color: #212529;
+      color: white;
+      padding: 40px 0 20px;
+    }
+
+    .footer a {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <img src="{% static '/images/hos_log.png' %}" alt="Logo" class="logo-img" />
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link " href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'alldoctor' %}">All Doctors</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+      </ul>
+ <div class="d-flex align-items-center  gap-3">
+          {% if user.is_authenticated %}
+          <div class="dropdown">
+            <a class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle"
+              href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-regular  text-light fa-user me-2"></i>
+              <span class="fw-semibold text-light">{{ user.username }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-regular fa-user me-2"></i>Profile</a></li>
+              <li><a class="dropdown-item" href="#"><i class="fa-solid fa-key me-2"></i>Appointment</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+            </ul>
+          </div>
+          {% else %}
+          <a class="btn btn-outline-light" href="{% url 'login' %}">Login</a>
+          <a class="btn btn-light" href="{% url 'register' %}">Register</a>
+          {% endif %}
+        </div>
+      </div>
+       </div>
+  </div>
+</nav>
+
+<!-- Filter Dropdown -->
+<div class="container mt-4">
+  <form method="GET" action="">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <select name="specialization" class="form-select" onchange="this.form.submit()">
+          <option value="all" {% if not request.GET.specialization or request.GET.specialization == 'all' %}selected{% endif %}>All Doctors</option>
+          <option value="cardiologist" {% if request.GET.specialization == 'cardiologist' %}selected{% endif %}>Cardiologist</option>
+          <option value="gynecologist" {% if request.GET.specialization == 'gynecologist' %}selected{% endif %}>Gynecologist</option>
+          <option value="dentist" {% if request.GET.specialization == 'dentist' %}selected{% endif %}>Dentist</option>
+          <option value="orthopedic" {% if request.GET.specialization == 'orthopedic' %}selected{% endif %}>Orthopedic</option>
+          <option value="dermatologist" {% if request.GET.specialization == 'dermatologist' %}selected{% endif %}>Dermatologist</option>
+          <option value="pediatrician" {% if request.GET.specialization == 'pediatrician' %}selected{% endif %}>Pediatrician</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Doctor Cards -->
+<div class="container mt-5">
+  <div class="row">
+    {% for doc in result %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ doc.d_image.url }}" class="card-img-top" alt="{{ doc.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ doc.name }}</h5>
+          <p class="card-text">
+            <strong>Specialization:</strong> {{ doc.specialization }}<br>
+            <strong>Experience:</strong> {{ doc.experience }}<br>
+            <strong>Fee:</strong> ₹{{ doc.consultation_fee }}<br>
+            <strong>Email:</strong> {{ doc.email }}<br>
+            <strong>Phone:</strong> {{ doc.phone }}
+          </p>
+          <a href="/appointment/{{doc.id}}" class="btn btn-primary">appointment</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center mt-4">
+      <p class="text-danger">No doctors found for this specialization.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<!-- Footer -->
+<footer class="footer text-light bg-dark pt-5">
+  <div class="container">
+    <div class="row text-start">
+      <div class="col-md-4 mb-3">
+        <h5>About DocAppoint</h5>
+        <p>DocAppoint helps patients connect with doctors quickly and easily.</p>
+      </div>
+      <div class="col-md-4 mb-3">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">All Doctors</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-3">
+        <h5>Contact Us</h5>
+        <p>Email: support@docappoint.com</p>
+        <p>Phone: +91 12345 67890</p>
+      </div>
+    </div>
+    <hr class="bg-light" />
+    <div class="text-center pb-3">
+      <p class="mb-0">&copy; 2025 DocAppoint. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
